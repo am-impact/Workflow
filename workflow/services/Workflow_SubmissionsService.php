@@ -26,7 +26,7 @@ class Workflow_SubmissionsService extends BaseApplicationComponent
     {
         return $this->getCriteria(array('limit' => 1, 'id' => $id))->first();
     }
-    
+
     public function save(Workflow_SubmissionModel $model)
     {
         $isNewSubmission = !$model->id;
@@ -90,7 +90,7 @@ class Workflow_SubmissionsService extends BaseApplicationComponent
         if (!$event->performAction) {
             return false;
         }
-        
+
         // Set the entry to be enabled first
         $entry = craft()->entries->getEntryById($model->owner->id);
         $entry->enabled = true;
@@ -104,6 +104,43 @@ class Workflow_SubmissionsService extends BaseApplicationComponent
         $this->onApproveSubmission(new Event($this, array('submission' => $model)));
 
         return $result;
+    }
+
+    public function refuseSubmission(Workflow_SubmissionModel $model)
+    {
+        // Fire an 'onBeforeRefuseSubmission' event
+        $event = new Event($this, array('submission' => $model));
+        $this->onBeforeRefuseSubmission($event);
+
+        // Allow event to cancel submission saving
+        if (!$event->performAction) {
+            return false;
+        }
+
+        $transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
+
+        try {
+            // Delete the element and submission
+            craft()->elements->deleteElementById($model->id);
+            craft()->db->createCommand()->delete('workflow_submissions', array('id' => $model->id));
+
+            if ($transaction !== null) {
+                $transaction->commit();
+            }
+
+            // Fire an 'onRefuseSubmission' event
+            $this->onRefuseSubmission(new Event($this, array('submission' => $model)));
+
+            return true;
+        } catch (\Exception $e) {
+            if ($transaction !== null) {
+                $transaction->rollback();
+            }
+
+            throw $e;
+        }
+
+        return false;
     }
 
 
@@ -127,6 +164,16 @@ class Workflow_SubmissionsService extends BaseApplicationComponent
     }
 
     public function onApproveSubmission(\CEvent $event)
+    {
+        $this->raiseEvent('onApproveSubmission', $event);
+    }
+
+    public function onBeforeRefuseSubmission(\CEvent $event)
+    {
+        $this->raiseEvent('onBeforeRefuseSubmission', $event);
+    }
+
+    public function onRefuseSubmission(\CEvent $event)
     {
         $this->raiseEvent('onApproveSubmission', $event);
     }

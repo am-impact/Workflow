@@ -74,7 +74,7 @@ class WorkflowPlugin extends BasePlugin
     }
 
     public function onBeforeInstall()
-    {   
+    {
         if (version_compare(craft()->getVersion(), '2.5', '<')) {
             throw new Exception($this->getName() . ' requires Craft CMS 2.5+ in order to run.');
         }

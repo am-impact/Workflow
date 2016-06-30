@@ -151,7 +151,7 @@ class Workflow_SubmissionElementType extends BaseElementType
             $query->andWhere(DbHelper::parseDateParam('workflow_submissions.dateCreated', $criteria->dateCreated, $query->params));
         }
     }
-    
+
     public function getAvailableActions($source = null)
     {
         return array('Workflow_SubmissionsStatus');

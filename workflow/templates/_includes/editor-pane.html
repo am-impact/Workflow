@@ -13,7 +13,7 @@
                         <label>{{ "Approved submission" | t }}</label>
 
                         <div class="instructions">
-                            <p><a href="{{ submission.publisher.cpEditUrl }}">{{ submission.publisher }}</a> {{ "approved this entry on " ~ submission.dateApproved | date('jS M Y g:ia') ~ "." | t }}</p>
+                            <p><a href="{{ submission.publisher.cpEditUrl }}">{{ submission.publisher }}</a> {{ "approved this entry on {date}." | t({ date: submission.dateApproved | date('jS M Y g:ia') }) }}</p>
                         </div>
                     </div>
                 {% else %}
@@ -21,7 +21,7 @@
                         <label>{{ "Awaiting approval" | t }}</label>
 
                         <div class="instructions">
-                            <p style="color: #da5a47;">{{ "This entry has been submitted for review on " ~ submission.dateCreated | date('jS M Y g:ia') ~ " and is awaiting approval. Changes cannot be made until approved." | t }}</p>
+                            <p style="color: #da5a47;">{{ "This entry has been submitted for review on {date} and is awaiting approval. Changes cannot be made until approved." | t({ date: submission.dateCreated | date('jS M Y g:ia') }) }}</p>
                         </div>
                     </div>
                 {% endif %}

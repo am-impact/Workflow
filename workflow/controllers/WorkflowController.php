@@ -63,7 +63,22 @@ class WorkflowController extends BaseController
         craft()->request->redirect(craft()->request->urlReferrer);
     }
 
+    public function actionRefuseSubmission()
+    {
+        $user = craft()->userSession->getUser();
 
+        $submissionId = craft()->request->getParam('submissionId');
+        $model = craft()->workflow_submissions->getById($submissionId);
+
+        if (craft()->workflow_submissions->refuseSubmission($model)) {
+            craft()->userSession->setNotice(Craft::t('Submission refused.'));
+        } else {
+            craft()->userSession->setError(Craft::t('Could not refuse submission.'));
+        }
+
+        // Redirect page to the entry as its not a form submission
+        craft()->request->redirect(craft()->request->urlReferrer);
+    }
 
 
 

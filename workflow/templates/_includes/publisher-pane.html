@@ -9,7 +9,7 @@
                         <label>{{ "Approved submission" | t }}</label>
 
                         <div class="instructions">
-                            <p><a href="{{ submission.publisher.cpEditUrl }}">{{ submission.publisher }}</a> {{ "approved this entry on " ~ submission.dateApproved | date('jS M Y g:ia') ~ "." | t }}</p>
+                            <p><a href="{{ submission.publisher.cpEditUrl }}">{{ submission.publisher }}</a> {{ "approved this entry on {date}." | t({ date: submission.dateApproved | date('jS M Y g:ia') }) }}</p>
                         </div>
                     </div>
                 {% else %}
@@ -17,7 +17,7 @@
                         <label>{{ "Approve submission" | t }}</label>
 
                         <div class="instructions">
-                            <p><a href="{{ submission.editor.cpEditUrl }}">{{ submission.editor }}</a> {{ "has submitted this entry for review on " ~ submission.dateCreated | date('jS M Y g:ia') ~ ". Please review this entry before publishing." | t }}</p>
+                            <p><a href="{{ submission.editor.cpEditUrl }}">{{ submission.editor }}</a> {{ "has submitted this entry for review on {date}. Please review this entry before publishing." | t({ date: submission.dateCreated | date('jS M Y g:ia') }) }}</p>
                         </div>
                     </div>
 
@@ -25,6 +25,9 @@
 
                     <div class="btngroup">
                         <a href="{{ actionUrl('workflow/approveSubmission', { submissionId: submission.id }) }}" class="btn submit">{{ "Approve & publish entry" | t }}</a>
+                    </div>
+                    <div class="right">
+                        <a class="btn formsubmit" data-action="workflow/refuseSubmission" data-param="submissionId" data-value="{{ submission.id }}" data-confirm="{{ "Are you sure you want to refuse this submission?"|t }}">{{ "Refuse" | t }}</a>
                     </div>
                 {% endif %}
             </div>
